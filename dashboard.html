@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ICT Club | Member Dashboard</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="page-shell dashboard-page">
+    <nav class="topbar">
+      <div class="brand">ICT Club Portal</div>
+      <div class="topbar-actions">
+        <button id="darkModeToggle" class="button button-ghost">Dark Mode</button>
+        <button id="logoutButton" class="button button-secondary">Logout</button>
+      </div>
+    </nav>
+
+    <main class="dashboard-grid">
+      <section class="card profile-card" id="profileCard">
+        <div class="card-header">
+          <h2>Profile</h2>
+          <p>Welcome back, member.</p>
+        </div>
+        <div class="profile-content" id="profileContent"></div>
+      </section>
+
+      <section class="card stats-card" id="statsCard">
+        <div class="card-header">
+          <h2>Membership Stats</h2>
+        </div>
+        <div class="stats-grid" id="statsGrid"></div>
+      </section>
+
+      <section class="card event-card" id="eventsCard">
+        <div class="card-header">
+          <h2>Upcoming Events</h2>
+        </div>
+        <div id="eventsList" class="event-list"></div>
+      </section>
+
+      <section class="card attendance-card" id="attendanceCard">
+        <div class="card-header">
+          <h2>Attendance History</h2>
+        </div>
+        <div id="attendanceHistory" class="attendance-history"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="data/mock-data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/attendance.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

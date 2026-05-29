@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ICT Club | Admin Dashboard</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="page-shell admin-page">
+    <nav class="topbar">
+      <div class="brand">ICT Club Admin</div>
+      <div class="topbar-actions">
+        <button id="darkModeToggle" class="button button-ghost">Dark Mode</button>
+        <button id="logoutButton" class="button button-secondary">Logout</button>
+      </div>
+    </nav>
+
+    <main class="admin-grid">
+      <section class="card admin-summary">
+        <div class="card-header">
+          <h2>Admin Overview</h2>
+          <p>Manage members, events and attendance.</p>
+        </div>
+        <div class="analytics-grid" id="analyticsGrid"></div>
+      </section>
+
+      <section class="card event-manager">
+        <div class="card-header">
+          <h2>Create Event</h2>
+        </div>
+        <form id="eventForm" class="event-form" novalidate>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="eventTitle">Event Title</label>
+              <input type="text" id="eventTitle" required placeholder="Guest Lecture" />
+            </div>
+            <div class="form-group">
+              <label for="eventDescription">Description</label>
+              <textarea id="eventDescription" rows="3" required placeholder="Short event summary"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="eventDate">Date</label>
+              <input type="date" id="eventDate" required />
+            </div>
+            <div class="form-group">
+              <label for="eventVenue">Venue</label>
+              <input type="text" id="eventVenue" required placeholder="Main Hall" />
+            </div>
+          </div>
+          <input type="hidden" id="eventId" />
+          <button type="submit" class="button button-primary">Save Event</button>
+        </form>
+      </section>
+
+      <section class="card member-manager">
+        <div class="card-header">
+          <h2>Members</h2>
+          <div class="member-actions">
+            <input id="memberSearch" placeholder="Search by name or faculty" />
+            <button id="exportJson" class="button button-ghost">Export JSON</button>
+          </div>
+        </div>
+        <div id="membersList" class="member-list"></div>
+      </section>
+
+      <section class="card event-list-card">
+        <div class="card-header">
+          <h2>Events & Attendance</h2>
+        </div>
+        <div id="adminEventsList" class="event-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="data/mock-data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/attendance.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

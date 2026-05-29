@@ -1,0 +1,410 @@
+:root {
+  --bg: #f5f7fb;
+  --surface: #ffffff;
+  --surface-alt: #eef2f7;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --primary: #2563eb;
+  --primary-light: #dbeafe;
+  --success: #16a34a;
+  --danger: #dc2626;
+  --border: #d1d5db;
+  --shadow: rgba(15, 23, 42, 0.08);
+}
+
+[data-theme="dark"] {
+  --bg: #0f172a;
+  --surface: #111827;
+  --surface-alt: #1f2937;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --border: #334155;
+  --shadow: rgba(255, 255, 255, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.page-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.hero-panel {
+  display: grid;
+  gap: 24px;
+  padding: 32px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(59, 130, 246, 0.06));
+  margin-bottom: 24px;
+}
+
+.hero-panel h1 {
+  margin: 0 0 12px;
+  font-size: clamp(2rem, 3vw, 3rem);
+}
+
+.eyebrow {
+  margin: 0 0 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.tab-button {
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  padding: 12px 24px;
+  transition: all 0.2s ease;
+}
+
+.tab-button.active,
+.tab-button:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+.auth-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr;
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 28px;
+  box-shadow: 0 20px 55px -40px var(--shadow);
+}
+
+.panel h2 {
+  margin-top: 0;
+}
+
+.form-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.form-group {
+  display: grid;
+  gap: 8px;
+}
+
+.form-group label {
+  font-weight: 600;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px 16px;
+  background: var(--surface-alt);
+  color: var(--text);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-with-action {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-action input {
+  flex: 1;
+  padding-right: 112px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: var(--primary);
+  font-weight: 700;
+  cursor: pointer;
+  padding: 10px 14px;
+  border-radius: 999px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.password-toggle:hover {
+  background: rgba(37, 99, 235, 0.08);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.button {
+  border: none;
+  border-radius: 14px;
+  padding: 14px 20px;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+}
+
+button:disabled,
+button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+}
+
+.button-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.button-secondary {
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.button-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.input-error {
+  min-height: 18px;
+  color: var(--danger);
+  font-size: 0.9rem;
+}
+
+.form-note {
+  margin: 16px 0 0;
+  color: var(--muted);
+}
+
+.page-footer {
+  text-align: center;
+  margin-top: 32px;
+  color: var(--muted);
+}
+
+.dashboard-page,
+.admin-page {
+  background: none;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  background: var(--surface);
+  padding: 18px 24px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+
+.brand {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.topbar-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.dashboard-grid,
+.admin-grid {
+  display: grid;
+  gap: 24px;
+}
+
+.dashboard-grid {
+  grid-template-columns: minmax(280px, 360px) 1fr;
+}
+
+.admin-grid {
+  grid-template-columns: 1.2fr 1.4fr;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 20px 55px -40px var(--shadow);
+}
+
+.card-header {
+  margin-bottom: 18px;
+}
+
+.profile-content,
+.stats-grid,
+.event-list,
+.attendance-history,
+.member-list,
+.analytics-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.profile-card .profile-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 16px;
+  background: var(--surface-alt);
+  border-radius: 16px;
+}
+
+.profile-card .profile-row strong {
+  color: var(--muted);
+}
+
+.stats-grid {
+  grid-template-columns: repeat(2, minmax(120px, 1fr));
+}
+
+.stat-card {
+  background: var(--surface-alt);
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.event-item,
+.member-item,
+.attendance-item,
+.analytics-card {
+  background: var(--surface-alt);
+  border-radius: 18px;
+  padding: 18px;
+  display: grid;
+  gap: 12px;
+}
+
+.event-item h3,
+.member-item h3,
+.attendance-item h3,
+.analytics-card h3 {
+  margin: 0;
+}
+
+.event-item p,
+.member-item p,
+.attendance-item p,
+.analytics-card p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.event-actions,
+.member-actions,
+.attendance-status {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.event-actions button,
+.member-actions button,
+.attendance-status button {
+  margin-left: auto;
+}
+
+.member-actions {
+  align-items: center;
+}
+
+.member-actions input {
+  flex: 1;
+  min-width: 220px;
+}
+
+.attendance-history {
+  grid-template-columns: 1fr;
+}
+
+.event-list,
+.member-list {
+  grid-auto-rows: minmax(140px, auto);
+}
+
+.event-list .event-item,
+.member-list .member-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .dashboard-grid,
+  .admin-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-panel,
+  .panel,
+  .topbar,
+  .card {
+    padding: 20px;
+  }
+
+  .hero-actions,
+  .topbar-actions,
+  .event-actions,
+  .member-actions,
+  .attendance-status {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .button {
+    width: 100%;
+  }
+}
