@@ -1,7 +1,12 @@
 (function () {
   function getStore(key) {
     const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : [];
+    if (!raw) return [];
+    try {
+      return JSON.parse(raw);
+    } catch (error) {
+      return [];
+    }
   }
 
   function saveStore(key, value) {
@@ -48,6 +53,14 @@
     return Math.round((present / joinedEventsCount) * 100);
   }
 
+  function isAttendanceLocked(eventDate) {
+    if (!eventDate) return false;
+    const eventDay = new Date(`${eventDate}T00:00:00`);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return eventDay < today;
+  }
+
   window.attendanceApi = {
     getAttendanceRecords,
     saveAttendanceRecords,
@@ -55,6 +68,7 @@
     markAttendance,
     getUserAttendanceHistory,
     getAttendanceByEvent,
-    calculateAttendancePercentage
+    calculateAttendancePercentage,
+    isAttendanceLocked
   };
 })();

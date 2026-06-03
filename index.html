@@ -8,117 +8,145 @@
 </head>
 <body>
   <div class="page-shell auth-page">
-    <header class="hero-panel">
-      <div>
-        <p class="eyebrow">ICT Club Portal</p>
-        <h1>University ICT Club Management</h1>
-        <p>Manage memberships, events, attendance and clubs in one browser-powered portal.</p>
-      </div>
-      <div class="hero-actions">
-        <button class="tab-button active" data-target="login-panel">Login</button>
-        <button class="tab-button" data-target="signup-panel">Sign Up</button>
-      </div>
+    <header class="site-header">
+      <div class="brand">ICT Club Portal</div>
     </header>
 
-    <main class="auth-grid">
-      <section class="panel login-panel active" id="login-panel">
-        <h2>Member Login</h2>
-        <form id="loginForm" novalidate>
-          <div class="form-group">
-            <label for="loginEmail">Email</label>
-            <input type="email" id="loginEmail" required placeholder="you@student.edu" />
-            <span class="input-error" id="loginEmailError"></span>
-          </div>
-          <div class="form-group password-field">
-            <label for="loginPassword">Password</label>
-            <div class="input-with-action">
-              <input type="password" id="loginPassword" required placeholder="Enter password" />
-              <button type="button" class="password-toggle" data-target="loginPassword">Show</button>
-            </div>
-            <span class="input-error" id="loginPasswordError"></span>
-          </div>
-          <button type="submit" class="button button-primary">Login</button>
-          <p class="form-note"><!--Admin credential: <strong>admin@ictclub.edu</strong> / <strong>Admin@123</strong>--></p>
-        </form>
-      </section>
+    <section class="landing-hero" id="home">
+      <div class="hero-copy">
+        <p class="eyebrow">ICT Club Portal</p>
+        <h1>Welcome to your campus ICT club.</h1>
+        <p class="lead">A lightweight portal where members can sign in, register, and access event and attendance tools in one polished experience.</p>
+        <div class="hero-cta">
+          <a href="#auth-card" class="button button-primary">Join the club</a>
+          <a href="#about" class="button button-ghost">See how it works</a>
+        </div>
+      </div>
 
-      <section class="panel signup-panel" id="signup-panel">
-        <h2>New Member Registration</h2>
-        <form id="signupForm" novalidate>
-          <div class="form-grid">
-            <div class="form-group">
-              <label for="fullName">Full Name</label>
-              <input type="text" id="fullName" required placeholder="Jane Doe" />
-              <span class="input-error" id="nameError"></span>
-            </div>
-            <div class="form-group">
-              <label for="email">Email</label>
-              <input type="email" id="email" required placeholder="jane@student.edu" />
-              <span class="input-error" id="emailError"></span>
-            </div>
-            <div class="form-group">
-              <label for="phone">Phone Number</label>
-              <input type="tel" id="phone" required placeholder="070 1234 5678" />
-              <span class="input-error" id="phoneError"></span>
-            </div>
-            <div class="form-group">
-              <label for="studentId">Student ID</label>
-              <input type="text" id="studentId" required placeholder="2024ICT001" />
-              <span class="input-error" id="studentIdError"></span>
-            </div>
-            <div class="form-group">
-              <label for="faculty">Faculty</label>
-              <select id="faculty" required>
-                <option value="">Select faculty</option>
-                <option>Sharia</option>
-                <option>Education</option>
-                <option>IT</option>
-                <option>School of Business</option>
-              </select>
-              <span class="input-error" id="facultyError"></span>
-            </div>
-            <div class="form-group">
-              <label for="interest">ICT Interest</label>
-              <select id="interest" required>
-                <option value="">Select interest</option>
-                <option>Cyber Security</option>
-                <option>Software Engineering</option>
-                <option>Data Science</option>
-                <option>UI/UX Design</option>
-                <option>AI/ML</option>
-                <option>Networking</option>
-              </select>
-              <span class="input-error" id="interestError"></span>
-            </div>
-            <div class="form-group password-field">
-              <label for="password">Password</label>
-              <div class="input-with-action">
-                <input type="password" id="password" required placeholder="Enter password" />
-                <button type="button" class="password-toggle" data-target="password">Show</button>
-              </div>
-              <span class="input-error" id="passwordError"></span>
-            </div>
-            <div class="form-group password-field">
-              <label for="confirmPassword">Confirm Password</label>
-              <div class="input-with-action">
-                <input type="password" id="confirmPassword" required placeholder="Repeat password" />
-                <button type="button" class="password-toggle" data-target="confirmPassword">Show</button>
-              </div>
-              <span class="input-error" id="confirmPasswordError"></span>
-            </div>
+      <div class="auth-card" id="auth-card">
+        <div class="auth-card-top">
+          <div>
+            <p class="eyebrow">Member access</p>
+            <h2>Sign in</h2>
           </div>
-          <button type="submit" class="button button-secondary" disabled>Create Account</button>
-          <p class="form-note">Already registered? Use the login tab above.</p>
-        </form>
-      </section>
-    </main>
+          <div class="hero-actions">
+            <button class="tab-button active" data-target="login-panel">Login</button>
+            <button class="tab-button" data-target="signup-panel">Sign Up</button>
+          </div>
+        </div>
+
+        <div class="auth-grid">
+          <section class="panel login-panel active" id="login-panel">
+            <h3>Member Login</h3>
+            <form id="loginForm" novalidate>
+              <div class="form-group">
+                <label for="loginEmail">Email</label>
+                <input type="email" id="loginEmail" required placeholder="you@student.edu" />
+                <span class="input-error" id="loginEmailError"></span>
+              </div>
+              <div class="form-group password-field">
+                <label for="loginPassword">Password</label>
+                <div class="input-with-action">
+                  <input type="password" id="loginPassword" required placeholder="Enter password" />
+                  <button type="button" class="password-toggle" data-target="loginPassword">Show</button>
+                </div>
+                <span class="input-error" id="loginPasswordError"></span>
+              </div>
+              <button type="submit" class="button button-primary">Login</button>
+              <p class="form-note"><!--Admin credential: <strong>admin@ictclub.edu</strong> / <strong>Admin@123</strong>--></p>
+            </form>
+          </section>
+
+          <section class="panel signup-panel" id="signup-panel">
+            <h3>New Member Registration</h3>
+            <form id="signupForm" novalidate>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="fullName">Full Name</label>
+                  <input type="text" id="fullName" required placeholder="Jane Doe" />
+                  <span class="input-error" id="nameError"></span>
+                </div>
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" id="email" required placeholder="jane@student.edu" />
+                  <span class="input-error" id="emailError"></span>
+                </div>
+                <div class="form-group">
+                  <label for="phone">Phone Number</label>
+                  <input type="tel" id="phone" required placeholder="070 1234 5678" />
+                  <span class="input-error" id="phoneError"></span>
+                </div>
+                <div class="form-group">
+                  <label for="studentId">Student ID</label>
+                  <input type="text" id="studentId" required placeholder="2024ICT001" />
+                  <span class="input-error" id="studentIdError"></span>
+                </div>
+                <div class="form-group">
+                  <label for="faculty">Faculty</label>
+                  <select id="faculty" required>
+                    <option value="">Select faculty</option>
+                    <option>Sharia</option>
+                    <option>Education</option>
+                    <option>IT</option>
+                    <option>School of Business</option>
+                  </select>
+                  <span class="input-error" id="facultyError"></span>
+                </div>
+                <div class="form-group">
+                  <label for="interest">ICT Interest</label>
+                  <select id="interest" required>
+                    <option value="">Select interest</option>
+                    <option>Cyber Security</option>
+                    <option>Software Engineering</option>
+                    <option>Data Science</option>
+                    <option>UI/UX Design</option>
+                    <option>AI/ML</option>
+                    <option>Networking</option>
+                  </select>
+                  <span class="input-error" id="interestError"></span>
+                </div>
+                <div class="form-group password-field">
+                  <label for="password">Password</label>
+                  <div class="input-with-action">
+                    <input type="password" id="password" required placeholder="Enter password" />
+                    <button type="button" class="password-toggle" data-target="password">Show</button>
+                  </div>
+                  <span class="input-error" id="passwordError"></span>
+                </div>
+                <div class="form-group password-field">
+                  <label for="confirmPassword">Confirm Password</label>
+                  <div class="input-with-action">
+                    <input type="password" id="confirmPassword" required placeholder="Repeat password" />
+                    <button type="button" class="password-toggle" data-target="confirmPassword">Show</button>
+                  </div>
+                  <span class="input-error" id="confirmPasswordError"></span>
+                </div>
+              </div>
+              <button type="submit" class="button button-secondary" disabled>Create Account</button>
+              <p class="form-note">Already registered? Use the login tab above.</p>
+            </form>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section class="landing-details" id="about">
+      <div class="detail-copy">
+        <p class="eyebrow">About the portal</p>
+        <h2>Designed for modern club membership and event management.</h2>
+        <p>Keep the ICT club experience focused, secure, and easy to access from any browser — with registration, login, and member controls all in one place.</p>
+      </div>
+    </section>
 
     <footer class="page-footer">
       <p>ICT Club Management | Local browser app with role-based access.</p>
     </footer>
   </div>
+  <div id="toastContainer" class="toast-container"></div>
 
   <script src="data/mock-data.js"></script>
   <script src="js/auth.js"></script>
+  <script src="js/notifications.js"></script>
+  <script src="js/audit.js"></script>
 </body>
 </html>

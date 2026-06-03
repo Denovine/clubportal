@@ -1,7 +1,12 @@
 (function () {
   function getStore(key) {
     const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : [];
+    if (!raw) return [];
+    try {
+      return JSON.parse(raw);
+    } catch (error) {
+      return [];
+    }
   }
 
   function saveStore(key, value) {
@@ -34,11 +39,41 @@
     return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
   }
 
+  function getNonAdminUsers() {
+    return getAllUsers().filter((user) => user.role !== 'admin');
+  }
+
+  function getUniqueValues(users, key) {
+    return Array.from(new Set(users.map((user) => user[key]).filter(Boolean))).sort();
+  }
+
+  function getFilterValues() {
+    return {
+      search: document.getElementById('memberSearch')?.value.trim().toLowerCase() || '',
+      faculty: document.getElementById('filterFaculty')?.value || '',
+      interest: document.getElementById('filterInterest')?.value || '',
+      role: document.getElementById('filterRole')?.value || ''
+    };
+  }
+
+  function populateFilterOptions() {
+    const users = getNonAdminUsers();
+    const facultySelect = document.getElementById('filterFaculty');
+    const interestSelect = document.getElementById('filterInterest');
+    if (!facultySelect || !interestSelect) return;
+    const facultyOptions = getUniqueValues(users, 'faculty');
+    const interestOptions = getUniqueValues(users, 'interest');
+
+    facultySelect.innerHTML = '<option value="">All Faculties</option>' + facultyOptions.map((value) => `<option value="${value}">${value}</option>`).join('');
+    interestSelect.innerHTML = '<option value="">All Interests</option>' + interestOptions.map((value) => `<option value="${value}">${value}</option>`).join('');
+  }
+
   function createEventFromForm() {
     const title = document.getElementById('eventTitle').value.trim();
     const description = document.getElementById('eventDescription').value.trim();
     const date = document.getElementById('eventDate').value;
     const venue = document.getElementById('eventVenue').value.trim();
+    const capacity = parseInt(document.getElementById('eventCapacity').value, 10) || 30;
     const id = document.getElementById('eventId').value;
 
     if (!title || !description || !date || !venue) {
@@ -46,48 +81,98 @@
       return null;
     }
 
-    return { id: id || `event-${Date.now()}`, title, description, date, venue };
+    const events = getEvents();
+    if (!id && events.some((item) => item.title.toLowerCase() === title.toLowerCase() && item.date === date)) {
+      alert('An event with the same title and date already exists.');
+      return null;
+    }
+
+    return { id: id || `event-${Date.now()}`, title, description, date, venue, capacity };
+  }
+
+  function createBarChart(data) {
+    const max = Math.max(...Object.values(data), 1);
+    return Object.entries(data)
+      .sort((a, b) => b[1] - a[1])
+      .map(([label, count]) => `
+        <div class="chart-row">
+          <span>${label}</span>
+          <div class="chart-bar">
+            <div style="width: ${Math.round((count / max) * 100)}%"></div>
+          </div>
+          <strong>${count}</strong>
+        </div>
+      `)
+      .join('');
   }
 
   function renderAnalytics() {
     const analyticsGrid = document.getElementById('analyticsGrid');
-    const users = getAllUsers();
-    const totalMembers = users.filter((user) => user.role !== 'admin').length;
+    const users = getNonAdminUsers();
+    const attendanceRecords = window.attendanceApi.getAttendanceRecords();
+    const totalMembers = users.length;
+    const activeMembers = users.filter((user) => (user.joinedEvents || []).length > 0).length;
+    const inactiveMembers = totalMembers - activeMembers;
+    const attendanceTotals = attendanceRecords.reduce((acc, record) => {
+      acc[record.status] = (acc[record.status] || 0) + 1;
+      return acc;
+    }, {});
+    const presentCount = attendanceTotals.present || 0;
+    const totalAttendance = attendanceRecords.length || 1;
+    const attendanceRate = Math.round((presentCount / totalAttendance) * 100);
     const facultyTotals = users.reduce((acc, user) => {
-      if (!acc[user.faculty]) acc[user.faculty] = 0;
-      acc[user.faculty] += 1;
+      if (!user.faculty) return acc;
+      acc[user.faculty] = (acc[user.faculty] || 0) + 1;
       return acc;
     }, {});
     const interestTotals = users.reduce((acc, user) => {
-      if (!acc[user.interest]) acc[user.interest] = 0;
-      acc[user.interest] += 1;
+      if (!user.interest) return acc;
+      acc[user.interest] = (acc[user.interest] || 0) + 1;
       return acc;
     }, {});
-    const popularInterest = Object.keys(interestTotals).sort((a, b) => interestTotals[b] - interestTotals[a])[0] || 'N/A';
 
-    analyticsGrid.innerHTML = '';
-    const cards = [
-      { title: 'Total Members', value: totalMembers },
-      { title: 'Popular Faculty', value: Object.entries(facultyTotals).sort((a, b) => b[1] - a[1]).map(([key, value]) => `${key} (${value})`).join(', ') || 'None' },
-      { title: 'Top ICT Interest', value: popularInterest }
-    ];
-
-    cards.forEach((card) => {
-      const cardNode = document.createElement('div');
-      cardNode.className = 'analytics-card';
-      cardNode.innerHTML = `<h3>${card.value}</h3><p>${card.title}</p>`;
-      analyticsGrid.appendChild(cardNode);
-    });
+    analyticsGrid.innerHTML = `
+      <div class="analytics-card summary-card">
+        <div>
+          <h3>${totalMembers}</h3>
+          <p>Total Members</p>
+        </div>
+        <div class="mini-stats">
+          <span>${activeMembers} active</span>
+          <span>${inactiveMembers} inactive</span>
+        </div>
+      </div>
+      <div class="analytics-card progress-card">
+        <div>
+          <h3>${attendanceRate}%</h3>
+          <p>Attendance Rate</p>
+        </div>
+        <div class="progress-bar"><div style="width: ${attendanceRate}%"></div></div>
+      </div>
+      <div class="analytics-card chart-card">
+        <h3>Members per Faculty</h3>
+        <div class="chart-content">${createBarChart(facultyTotals)}</div>
+      </div>
+      <div class="analytics-card chart-card">
+        <h3>Members per Interest</h3>
+        <div class="chart-content">${createBarChart(interestTotals)}</div>
+      </div>
+    `;
   }
 
-  function renderMembers(filterText = '') {
+  function renderMembers(filterText = '', facultyFilter = '', interestFilter = '', roleFilter = '') {
     const list = document.getElementById('membersList');
-    const users = getAllUsers().filter((user) => user.role !== 'admin');
+    const users = getNonAdminUsers();
     list.innerHTML = '';
     const search = filterText.trim().toLowerCase();
     const filtered = users.filter((user) => {
-      if (!search) return true;
-      return user.name.toLowerCase().includes(search) || user.faculty.toLowerCase().includes(search);
+      if (search && ![user.name, user.email, user.faculty, user.interest, user.role].some((value) => value?.toLowerCase().includes(search))) {
+        return false;
+      }
+      if (facultyFilter && user.faculty !== facultyFilter) return false;
+      if (interestFilter && user.interest !== interestFilter) return false;
+      if (roleFilter && user.role !== roleFilter) return false;
+      return true;
     });
 
     if (!filtered.length) {
@@ -118,10 +203,36 @@
     });
   }
 
+  function renderAuditLog() {
+    const container = document.getElementById('auditLog');
+    const logs = window.audit.getAuditLogs();
+    if (!logs.length) {
+      container.innerHTML = '<p>No audit records yet.</p>';
+      return;
+    }
+
+    container.innerHTML = logs.slice(0, 8).map((entry) => `
+      <div class="audit-row">
+        <div>
+          <strong>${entry.action}</strong>
+          <p>${entry.details}</p>
+        </div>
+        <div>
+          <span>${new Date(entry.timestamp).toLocaleString()}</span>
+          <small>${entry.userName} (${entry.role})</small>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function getEventAttendeeCount(eventId) {
+    return getNonAdminUsers().filter((user) => user.joinedEvents?.includes(eventId)).length;
+  }
+
   function renderEvents() {
     const list = document.getElementById('adminEventsList');
     const events = getEvents();
-    const users = getAllUsers().filter((user) => user.role !== 'admin');
+    const users = getNonAdminUsers();
     const attendanceRecords = window.attendanceApi.getAttendanceRecords();
     list.innerHTML = '';
 
@@ -131,15 +242,23 @@
     }
 
     events.forEach((event) => {
+      const attendeeCount = getEventAttendeeCount(event.id);
+      const eventAttendance = attendanceRecords.filter((record) => record.eventId === event.id);
+      const isLocked = window.attendanceApi.isAttendanceLocked(event.date);
+      const capacity = Number(event.capacity) || 30;
+      const full = attendeeCount >= capacity;
+
       const item = document.createElement('div');
       item.className = 'event-item';
-      const eventAttendance = attendanceRecords.filter((record) => record.eventId === event.id);
       item.innerHTML = `
         <div>
           <h3>${event.title}</h3>
           <p>${event.description}</p>
           <p><strong>${formatDate(event.date)}</strong> • ${event.venue}</p>
-          <p><strong>Attendance Records:</strong> ${eventAttendance.length}</p>
+          <p>Capacity: ${capacity} | RSVPs: ${attendeeCount}</p>
+          <p><strong>Attendance records:</strong> ${eventAttendance.length}</p>
+          ${isLocked ? '<span class="badge badge-locked">Attendance locked</span>' : ''}
+          ${full && !isLocked ? '<span class="badge badge-full">Full</span>' : ''}
         </div>
         <div class="event-actions">
           <button class="button button-secondary" data-edit-id="${event.id}">Edit</button>
@@ -152,18 +271,19 @@
       panel.innerHTML = `
         <div>
           <h3>Mark Attendance</h3>
-          <p>Select a student and status for this event.</p>
+          <p>${isLocked ? 'This event is locked for changes.' : 'Select a student and status for this event.'}</p>
         </div>
         <div class="attendance-status">
-          <select class="member-select" data-event-id="${event.id}">
+          <select class="member-select" data-event-id="${event.id}" ${isLocked ? 'disabled' : ''}>
             <option value="">Select member</option>
             ${users.map((user) => `<option value="${user.id}">${user.name} (${user.role})</option>`).join('')}
           </select>
-          <select class="status-select" data-event-id="${event.id}">
+          <select class="status-select" data-event-id="${event.id}" ${isLocked ? 'disabled' : ''}>
             <option value="present">Present</option>
+            <option value="late">Late</option>
             <option value="absent">Absent</option>
           </select>
-          <button class="button button-primary" data-save-attendance="${event.id}">Save</button>
+          <button class="button button-primary" data-save-attendance="${event.id}" ${isLocked ? 'disabled' : ''}>Save</button>
         </div>
       `;
 
@@ -182,10 +302,13 @@
       const users = getAllUsers();
       const user = users.find((item) => item.id === userId);
       if (!user) return;
+      const previousRole = user.role;
       user.role = role;
       saveUsers(users);
+      if (window.audit) window.audit.log('role-change', `${user.email} role changed from ${previousRole} to ${role}`);
       renderAnalytics();
-      renderMembers(document.getElementById('memberSearch').value);
+      const filters = getFilterValues();
+      renderMembers(filters.search, filters.faculty, filters.interest, filters.role);
     });
 
     list.addEventListener('click', (event) => {
@@ -197,8 +320,11 @@
       saveUsers(users);
       const records = window.attendanceApi.getAttendanceRecords().filter((record) => record.userId !== userId);
       window.attendanceApi.saveAttendanceRecords(records);
+      if (window.audit) window.audit.log('member-delete', `User ${userId} was deleted from system.`);
+      populateFilterOptions();
+      const filters = getFilterValues();
       renderAnalytics();
-      renderMembers(document.getElementById('memberSearch').value);
+      renderMembers(filters.search, filters.faculty, filters.interest, filters.role);
     });
   }
 
@@ -217,6 +343,7 @@
         document.getElementById('eventDescription').value = eventItem.description;
         document.getElementById('eventDate').value = eventItem.date;
         document.getElementById('eventVenue').value = eventItem.venue;
+        document.getElementById('eventCapacity').value = eventItem.capacity || 30;
         document.getElementById('eventId').value = eventItem.id;
       }
       if (deleteButton) {
@@ -225,6 +352,7 @@
         saveEvents(getEvents().filter((item) => item.id !== eventId));
         const remaining = window.attendanceApi.getAttendanceRecords().filter((record) => record.eventId !== eventId);
         window.attendanceApi.saveAttendanceRecords(remaining);
+        if (window.audit) window.audit.log('event-delete', `Event ${eventId} removed.`);
         renderEvents();
       }
       if (saveAttendanceButton) {
@@ -235,8 +363,14 @@
           alert('Choose a member to mark attendance.');
           return;
         }
-        window.attendanceApi.markAttendance(eventId, selectMember.value, selectStatus.value);
-        alert('Attendance updated successfully.');
+        const success = window.attendanceApi.markAttendance(eventId, selectMember.value, selectStatus.value);
+        if (!success) {
+          alert('This event is locked and cannot be updated.');
+          return;
+        }
+        if (window.audit) window.audit.log('attendance-update', `Attendance for ${selectMember.value} on ${eventId} set to ${selectStatus.value}.`);
+        if (window.notify) window.notify('Attendance updated successfully.', 'success');
+        renderEvents();
       }
     });
   }
@@ -251,26 +385,53 @@
       const foundIndex = events.findIndex((item) => item.id === newEvent.id);
       if (foundIndex >= 0) {
         events[foundIndex] = newEvent;
+        if (window.audit) window.audit.log('event-update', `Event ${newEvent.id} updated.`);
       } else {
         events.push(newEvent);
+        if (window.audit) window.audit.log('event-create', `Event created: ${newEvent.title}.`);
       }
       saveEvents(events);
       renderEvents();
       form.reset();
       document.getElementById('eventId').value = '';
-      alert('Event saved successfully.');
+      if (window.notify) window.notify('Event saved successfully.', 'success');
     });
   }
 
   function setupSearch() {
     const searchInput = document.getElementById('memberSearch');
+    if (!searchInput) return;
     searchInput.addEventListener('input', () => {
-      renderMembers(searchInput.value);
+      const filters = getFilterValues();
+      renderMembers(filters.search, filters.faculty, filters.interest, filters.role);
     });
+  }
+
+  function setupFilters() {
+    ['filterFaculty', 'filterInterest', 'filterRole'].forEach((id) => {
+      const element = document.getElementById(id);
+      if (!element) return;
+      element.addEventListener('change', () => {
+        const filters = getFilterValues();
+        renderMembers(filters.search, filters.faculty, filters.interest, filters.role);
+      });
+    });
+
+    const clearButton = document.getElementById('clearFilters');
+    if (clearButton) {
+      clearButton.addEventListener('click', () => {
+        document.getElementById('memberSearch').value = '';
+        document.getElementById('filterFaculty').value = '';
+        document.getElementById('filterInterest').value = '';
+        document.getElementById('filterRole').value = '';
+        renderMembers('', '', '', '');
+      });
+    }
   }
 
   function setupExport() {
     const exportButton = document.getElementById('exportJson');
+    if (!exportButton) return;
     exportButton.addEventListener('click', () => {
       const data = getAllUsers();
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -287,6 +448,7 @@
 
   function setupDarkMode() {
     const darkToggle = document.getElementById('darkModeToggle');
+    if (!darkToggle) return;
     darkToggle.addEventListener('click', () => {
       const root = document.documentElement;
       const theme = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
@@ -298,11 +460,14 @@
   function setupAdminPage() {
     const user = window.auth.requireAuth(['admin']);
     if (!user) return;
+    populateFilterOptions();
     renderAnalytics();
-    renderMembers();
+    renderMembers('', '', '', '');
     renderEvents();
+    renderAuditLog();
     setupEventForm();
     setupSearch();
+    setupFilters();
     setupExport();
     wireMemberActions();
     wireEventActions();

@@ -1,7 +1,12 @@
 (function () {
   function getStore(key) {
     const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) return [];
+    try {
+      return JSON.parse(raw);
+    } catch (error) {
+      return [];
+    }
   }
 
   function saveStore(key, value) {
@@ -18,6 +23,10 @@
 
   function findUserByEmail(email) {
     return getUsers().find((user) => user.email.toLowerCase() === email.toLowerCase());
+  }
+
+  function findUserByStudentId(studentId) {
+    return getUsers().find((user) => user.studentId.toLowerCase() === studentId.toLowerCase());
   }
 
   function getCurrentUserId() {
@@ -64,6 +73,7 @@
     if (values.password && values.password.length < 6) errors.password = 'Password must be at least 6 characters.';
     if (values.password !== values.confirmPassword) errors.confirmPassword = 'Passwords do not match.';
     if (findUserByEmail(values.email)) errors.email = 'This email is already registered.';
+    if (findUserByStudentId(values.studentId)) errors.studentId = 'This student ID is already registered.';
     return errors;
   }
 
@@ -99,6 +109,8 @@
     }
 
     setCurrentUser(user.id);
+    if (window.audit) window.audit.log('login', `User logged in: ${user.email}`);
+    if (window.notify) window.notify('Welcome back! Redirecting to your dashboard.', 'success');
     if (user.role === 'admin') {
       redirectTo('admin.html');
     } else {
@@ -144,7 +156,8 @@
     users.push(newUser);
     saveUsers(users);
     setCurrentUser(newUser.id);
-    alert('Registration successful. Redirecting to dashboard.');
+    if (window.audit) window.audit.log('signup', `New member registered: ${newUser.email}`);
+    if (window.notify) window.notify('Registration successful. Redirecting to dashboard.', 'success');
     redirectTo('dashboard.html');
   }
 
@@ -230,7 +243,10 @@
   }
 
   function logout() {
+    const current = getCurrentUser();
     clearCurrentUser();
+    if (window.audit && current) window.audit.log('logout', `User logged out: ${current.email}`);
+    if (window.notify) window.notify('You have been logged out.', 'info');
     redirectTo('index.html');
   }
 
